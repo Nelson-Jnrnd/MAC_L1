@@ -29,10 +29,36 @@ FROM `mflix-sample`._default.`movies`
 WHERE imdb.rating > 8
 AND "Ralph Fiennes" IN `cast`
 
+-- 6
+SELECT directors, COUNT(directors) AS count_films
+FROM `mflix-sample`.`_default`.`movies`
+UNNEST directors
+GROUP BY directors
+HAVING COUNT(directors) > 30
+ORDER BY count_films DESC
+
 -- 7
 SELECT _id, title
 FROM `mflix-sample`._default.`movies`
 WHERE ARRAY_COUNT(directors) > 20
+
+-- 8.1 (with "Woody Allen" as an example)
+-- indexes are needed for this solution
+CREATE INDEX def_movies_id ON `default`:`mflix-sample`.`_default`.`movies`(`_id`)
+CREATE INDEX adv_movie_id ON `default`:`mflix-sample`.`_default`.`comments`(`movie_id`) 
+
+SELECT RAW comments.text
+FROM `mflix-sample`.`_default`.`movies`
+INNER JOIN `mflix-sample`.`_default`.`comments` ON comments.movie_id = movies._id
+WHERE "Woody Allen" IN movies.directors
+
+-- 8.2 (with "Woody Allen" as an example)
+SELECT RAW text
+FROM `mflix-sample`.`_default`.`comments`
+WHERE comments.movie_id IN (
+    SELECT RAW _id
+    FROM `mflix-sample`.`_default`.`movies`
+    WHERE "Woody Allen" IN directors)
 
 -- 9
 SELECT schedule
