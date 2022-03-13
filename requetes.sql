@@ -68,4 +68,18 @@ WHERE schedule.movieId IN (
     SELECT RAW m._id
     FROM `mflix-sample`._default.`movies` AS m
     WHERE m.title = "Circle")
-    AND schedule.hourBegin < "18:00:00"
+AND schedule.hourBegin < "18:00:00"
+
+-- 10
+SELECT m._id,
+       m.title
+FROM `mflix-sample`.`_default`.`movies` m
+WHERE m._id IN (
+    SELECT DISTINCT RAW schedule.movieId
+    FROM `mflix-sample`._default.`theaters`
+    UNNEST schedule)
+AND m._id NOT IN (
+    SELECT DISTINCT RAW schedule.movieId
+    FROM `mflix-sample`._default.`theaters`
+    UNNEST schedule
+    WHERE schedule.hourBegin < "18:00:00")
