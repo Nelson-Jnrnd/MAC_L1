@@ -10,18 +10,18 @@ FROM `mflix-sample`._default.`movies`
 WHERE tomatoes.critic.meter = 100
 AND tomatoes.viewer.rating IS NOT VALUED
 
--- 4
-SELECT RAW name
-FROM `mflix-sample`._default.`comments`
-GROUP BY name
-HAVING count(*) > 300
-
 -- 3
 SELECT name, count(*) as cnt
 FROM `mflix-sample`._default.`comments`
 GROUP BY name
 ORDER BY cnt DESC
 LIMIT 10
+
+-- 4
+SELECT RAW name
+FROM `mflix-sample`._default.`comments`
+GROUP BY name
+HAVING count(*) > 300
 
 -- 5
 SELECT imdb.id as imdb_id, imdb.rating as imdb_rating, `cast`
