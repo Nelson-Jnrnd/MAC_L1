@@ -1,6 +1,7 @@
 package ch.heig.mac;
 
 import java.util.List;
+
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.json.JsonObject;
 import com.couchbase.client.java.query.QueryResult;
@@ -43,7 +44,7 @@ public class Requests {
     }
 
     public List<JsonObject> topReviewers() {
-         QueryResult result = cluster.query(
+        QueryResult result = cluster.query(
                 "SELECT name, count(*) as cnt\n" +
                         "FROM `mflix-sample`._default.`comments`\n" +
                         "GROUP BY name\n" +
@@ -122,8 +123,19 @@ public class Requests {
     }
 
     public List<JsonObject> nightMovies() {
-        throw new UnsupportedOperationException("Not implemented, yet");
+        QueryResult result = cluster.query(
+                "SELECT m._id as movie_id, m.title\n" +
+                        "FROM `mflix-sample`.`_default`.`movies` m\n" +
+                        "WHERE m._id IN (\n" +
+                        "SELECT DISTINCT RAW schedule.movieId\n" +
+                        "FROM `mflix-sample`._default.`theaters`\n" +
+                        "UNNEST schedule)\n" +
+                        "AND m._id NOT IN (\n" +
+                        "SELECT DISTINCT RAW schedule.movieId\n" +
+                        "FROM `mflix-sample`._default.`theaters`\n" +
+                        "UNNEST schedule\n" +
+                        "WHERE schedule.hourBegin < \"18:00:00\")"
+        );
+        return result.rowsAs(JsonObject.class);
     }
-
-
 }
