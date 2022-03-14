@@ -61,18 +61,12 @@ WHERE comments.movie_id IN (
     WHERE "Woody Allen" IN directors)
 
 -- 9
-SELECT schedule
-FROM `mflix-sample`._default.`theaters`
-UNNEST schedule
-WHERE schedule.movieId IN (
-    SELECT RAW m._id
-    FROM `mflix-sample`._default.`movies` AS m
-    WHERE m.title = "Circle")
-AND schedule.hourBegin < "18:00:00"
+UPDATE `mflix-sample`._default.theaters AS t
+SET t.schedule = ARRAY s FOR s IN t.schedule WHEN s.hourBegin >= "18:00:00"
+    OR s.movieId != movieId END;
 
 -- 10
-SELECT m._id,
-       m.title
+SELECT m._id as movie_id, m.title
 FROM `mflix-sample`.`_default`.`movies` m
 WHERE m._id IN (
     SELECT DISTINCT RAW schedule.movieId
