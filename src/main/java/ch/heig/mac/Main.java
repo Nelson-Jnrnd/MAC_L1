@@ -4,11 +4,13 @@ import com.couchbase.client.java.Cluster;
 
 public class Main {
 
+    public static final boolean hugoCredentials = true;
+
     // TODO: Configure credentials to allow connection to your local Couchbase instance
     public static Cluster openConnection() {
         var connectionString = "127.0.0.1";
-        var username = "Administrator";
-        var password = "Super2012";
+        var username = hugoCredentials ? "password" : "Administrator";
+        var password = hugoCredentials ? "password" : "Super2012";
 
         Cluster cluster = Cluster.connect(
                 connectionString,
